@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "941442718587",
+    "project_id": "testjob-3761a",
+    "storage_bucket": "testjob-3761a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941442718587:android:b0d845550c71badab4bbde",
+        "android_client_info": {
+          "package_name": "com.example.testjob"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYaWUCVijB7S81XoEaFSrS1U_XAlqqLds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
