@@ -41,8 +41,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController editCreatedAtController = TextEditingController();
   final TextEditingController editUpdatedAtController = TextEditingController();
 
-
-
+  File? profileImage, coverImage;
 
   Future<void> GetAccount() async {
     var accountResult = await HttpRequests.get(ApiRoutes.userMe);
@@ -71,43 +70,74 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     GetAccount();
-    //getLastNumbersPhone();
-    _imagePicker = ImagePicker();
-    _image = Image.asset(
-      'assets/logo.png', // Set a default image
-      height: 200,
-      width: 200,
-      fit: BoxFit.cover,
-    );
+    //getLastNumbersPhone();plz
   }
-
-  late ImagePicker _imagePicker;
-  late Image _image;
-
-
 
   Future<void> _pickImage() async {
-    final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _image = Image.file(
-          File(pickedFile.path),
-          height: 200,
-          width: 200,
-          fit: BoxFit.cover,
-        );
-      });
+    bool? media = await showMediaSelector();
+    if(media==null) {
+      return;
     }
+    XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    File? file = image != null ? File(image.path) : null;
+    profileImage = media ? file : null;
+    coverImage = !media ? file : null;
+    setState(() {
+
+    });
   }
 
-  void _editProfileImage(BuildContext context) {
-    // Add your logic for editing the profile image
-    // For example, you can open an image picker or a custom edit screen
-    print('Edit profile image tapped');
-  }
 
+  Future<bool?> showMediaSelector() async => (await showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(15))
+      ),
+      constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.3
+      ),
+      builder: (context){
+        return SizedBox(
+          width: double.maxFinite,
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(Icons.person, color: Colors.blue,),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Text("Profile image")
+                    ],
+                  ),
+                ),
+                Divider(),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop(false);
 
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(Icons.filter_frames_outlined, color: Colors.blue,),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Text("Cover image")
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      }));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,7 +162,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 height: 300,
                 width: double.infinity,
-                color: Colors.red,
+                color: Colors.grey,
                 child: Stack(
                   children: [
                     // Cover Photo
@@ -140,8 +170,12 @@ class _HomePageState extends State<HomePage> {
                       height: 200,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/logo.png'), // Add your cover photo asset
+                        image: coverImage != null ? DecorationImage(
+                          image:  FileImage(coverImage!), // Add your cover photo asset
+                          fit: BoxFit.cover,
+                        ) : const DecorationImage(
+                          image:  AssetImage('assets/logo.png'), // Add your cover photo asset
+                          opacity: 0.3,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -150,20 +184,19 @@ class _HomePageState extends State<HomePage> {
                     Positioned(
                       top: 150,
                       left: (MediaQuery.of(context).size.width - 100) / 2,
-                      child: GestureDetector(
-                        onTap: () => _editProfileImage(context),
-                        child: Container(
-                          height: 100,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            border: Border.all(width: 2, color: Colors.blue),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.asset('assets/logo.png'), // Add your profile photo asset
-                          ),
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          border: Border.all(width: 2, color: Colors.blue),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: profileImage != null ? Image.file(profileImage!) :  Image.asset(
+                              'assets/logo.png'
+                          ), // Add your profile photo asset
                         ),
                       ),
                     ),
