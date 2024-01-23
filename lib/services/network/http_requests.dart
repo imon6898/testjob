@@ -161,6 +161,32 @@ class HttpRequests {
   }
 
 
+  static Future put(String path, {required Map<String, dynamic> body}) async {
+    Uri uri = Uri.parse("${ApiRoutes.prefix}$path");
+
+    var request = await http.put(
+      uri,
+      headers: {
+        //'Accept': 'application/json',
+        'Authorization': 'Bearer $_token',
+        'Content-Type': 'application/json', // Add this line to specify JSON content type
+      },
+      body: jsonEncode(body), // Encode the request body as JSON
+    );
+
+    print("uri: $uri Res: ${request.body}");
+
+    if (request.statusCode != 200) {
+      // Handle the case when the request was not successful
+      return null;
+    }
+
+    // Parse and return the JSON response
+    return jsonDecode(request.body);
+  }
+
+
+
 
 
   static Future multipartPostRequest(String path, {File? file, required Map<String, String> body}) async {

@@ -464,7 +464,51 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  void _saveUserData() async {
+  Future<void> _saveUserData() async {
+
+    String editedFirstName = editFirstNameController.text;
+    String editedLastName = editLastNameController.text;
+    String editedTitle = editTitleController.text;
+    String editedCompanyName = editCompanyNameController.text;
+    String editedPoints = editPointsController.text;
+    String editedCreatedAt = editCreatedAtController.text;
+    String editedUpdatedAt = editUpdatedAtController.text;
+
+    try {
+      // Prepare the data for update
+      Map<String, dynamic> updatedData = {
+        "first_name": editedFirstName,
+        "last_name": editedLastName,
+        'title': editedTitle,
+        'company_name': editedCompanyName,
+        'points': int.parse(editedPoints), // Assuming points is an integer
+        'created_at': editedCreatedAt,
+        'updated_at': editedUpdatedAt,
+      };
+
+      // Make the PUT request
+      var accountResult = await HttpRequests.put(
+        ApiRoutes.userMe,
+        body: updatedData,
+      );
+
+      if (accountResult == null) {
+        // Handle the case when the request was not successful
+        return;
+      }
+      await GetAccount();
+
+    } catch (error) {
+      // Handle any errors that might occur during the process
+      print("Error during update: $error");
+    }
+  }
+
+
+
+
+
+  /*void _saveUserData() async {
     // Get data from controllers
     String editedFirstName = editFirstNameController.text;
     String editedLastName = editLastNameController.text;
@@ -477,8 +521,10 @@ class _HomePageState extends State<HomePage> {
     try {
       // Send an HTTP request to update user data using HttpRequests.putJson
       final result = await HttpRequests.putJson(ApiRoutes.userMe, body: {
-        'first_name': editedFirstName,
-        'last_name': editedLastName,
+        //'first_name': editedFirstName,
+        //'last_name': editedLastName,
+      "first_name": editedFirstName,
+      "last_name": editedLastName,
         'title': editedTitle,
         'company_name': editedCompanyName,
         'points': int.parse(editedPoints), // Assuming points is an integer
@@ -499,7 +545,7 @@ class _HomePageState extends State<HomePage> {
     } catch (error) {
       print('Error updating user data: $error');
     }
-  }
+  }*/
 
 
   void logoutUser() {
